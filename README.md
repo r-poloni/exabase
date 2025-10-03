@@ -2,16 +2,16 @@
 # exabase
 
 Exabase is an SQLite-based database structure for storing natural history collections data, suited for unifying under the same database structure both occurrence-based data (e.g. citizen science observations) where multiple specimens are lumped together and specimen-based data (e.g. a collection of samples for barcoding) where each specimen is recorded separately. 
-It is completely open-source and linked to a shiny-based app to visualize the data: [exabase_visualizer](https://github.com/r-poloni/exabase_visualiser)
-You will find below an example database following the exabase structure to show how it can be used, populated with the data from a paper I published and where we used both specimens from museums and citizen science and specimens for molecular analysis to study the distribution and taxonomy of a beetle genus.
+It is completely open-source and linked to a shiny-based app to visualize the data: [exabase_visualizer](https://github.com/r-poloni/exabase_visualiser).  
+You will find below an example database following the exabase structure to show how it can be used, populated with the data from a paper I published and where we used both specimens from museums and citizen science and specimens for molecular analysis to study the distribution and taxonomy of a beetle genus.  
 In this repository you will find both a [ready database](https://github.com/r-poloni/exabase/blob/main/example_exabase.db) and tables and code to reproduce the final database (in the code area).
 <br/><br/>
 ## Data definition language explained
 
 The file for data definition language is [example_exabase_ddl.sql](https://github.com/r-poloni/exabase/blob/main/example_exabase_ddl.sql) and contains a basic description of each field.
-The database is composed by 4 tables: “Records”, “Molecular”, “Taxonomy” and “Sequences”.
+The database is composed by 4 tables: “Records”, “Molecular”, “Taxonomy” and “Sequences”.  
 <br/>
-**Records:** It is a table where the unit (row) is an occurrence, as in GBIF, so a row where multiple specimens can be stored. Each row of the table corresponds to a unique combination of taxon key (a unique identifier for that name usage as in GBIF usageKey), location, date, collector and institution holding the specimen or record (or source in case of bibliographic data or another database).
+**Records:** It is a table where the unit (row) is an occurrence, as in GBIF, so a row where multiple specimens can be stored. Each row of the table corresponds to a unique combination of taxon key (a unique identifier for that name usage as in GBIF usageKey), location, date, collector and institution holding the specimen or record (or source in case of bibliographic data or another database).  
 Here I put all data that come from any natural history collection or any other source: material I examine in museums, species occurrence from bibliographic source, occurrence from another database. For example, these two rows are separate because the collection date is different. Since specimens in collections are not usually identified by a unique code, it is pointless to enter a row for each specimen. Instead, we can enter a row for each series of specimens that are in the same place (collection), collected by the same person, in the same location and on the same date and that are stored in the same museum.
 
 | usageKey | locality | eventDate | recordedBy | institutionID |
@@ -21,7 +21,7 @@ Here I put all data that come from any natural history collection or any other s
 
 <br/>
 
-**Molecular:** this table contains my collection of molecular samples, and the specimens from other collections, where each specimen has a unique code and is stored separately. Here, all fields can be repeated except for the specimen identifier (collection_id)
+**Molecular:** this table contains my collection of molecular samples, and the specimens from other collections, where each specimen has a unique code and is stored separately. Here, all fields can be repeated except for the specimen identifier (collection_id).  
 For this table, the only thing I indicate is where the specimen is in the collection, how it is preserved, etc. but I don’t include data on locality, collection date and so on. Since the specimens in my collection are also a source of data on the distribution, phenology and biology of the species, they are also included in the ‘Records’ table. In the ‘Records’ table, obviously, a row will be a series of specimens taken on the same day, by the same person, etc., while in the ‘Collection’ table each specimen has a separate row. These two tables are linked by the ‘linking_id’ field, which, for each row in the “Collection” table, points to a row in the ‘Records’ table. In the example below, you can see that the linking_id is the same; in fact, both specimens point to the same row in the ‘Records’ table, which means that they are both specimens taken on the same day by me in the same locality.
 | collection_id | linking_id | preservation |
 | ------------- | ---------- | ------------ |
@@ -79,9 +79,15 @@ What I do (but you can find your own way) is registering my data in spreadsheet 
 Two python scripts can be used to automatically update the "Taxonomy" table with new taxa: "exabase_update_taxonomy_for_records.py" and "exabase_update_taxonomy_for_molecular.py". They parse the table and read the species names, match them with the names already in "Taxonomy", and if they don't find a match, they interrogate the GBIF backbone taxonomy to find a usageKey for the new species added. If nothing is found, the usageKey will be set as the species name to allow adding the species to the table. However, this usage key is temporary, and it should be changed before uploading any new data on the other tables. In the example given, the species "Stenostoma rostratum" is not occurring in GBIF and has the usageKey m1.
 Other two python scripts import the data into the database: "exabase_import_records.py" and "exabase_import_molecular.py". They parse the data, and populate the "Records" and "Molecular" tables. 
 
-<br/><br/>
+<br/>
 
 ## Visualizing the data
 
-DB Browser for SQLite provides a very basic way of interacting with the database. For my own use, I created a shiny app to explore the data in the database, filter it and produce different visualisations like maps and phenology plots: https://github.com/r-poloni/exabase_visualiser
-</pre>
+DB Browser for SQLite provides a very basic way of interacting with the database. For my own use, I created a shiny app to explore the data in the database, filter it and produce different visualisations like maps and phenology plots: https://github.com/r-poloni/exabase_visualiser.
+
+<br/>
+
+## Caveats
+
+This database structure has been created to accomodate both sample-based data and occurrence-based data. It has been built following the [Darwin Core Standard](https://dwc.tdwg.org/) but with some modifications to better suit my needs. For the moment, it can only fit samples in collections, observations, and bibliographic citations. The taxonomic part is for the moment very simple and includes only valid names, but I will modify it in the future to fit also synonyms.
+
