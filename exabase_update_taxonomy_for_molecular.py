@@ -27,16 +27,17 @@ def get_species_gbif_taxonomy(usagekey):
         subfamily = ''
         tribe = ''
         genus = data.get('genus')
+        subgenus = ''
         species = data.get('species')
         canonicalName = data.get('canonicalName')
         authorship = data.get('authorship')
         scientificName = data.get('scientificName')
         rank = data.get('rank')
         isInGBIF = '1'
-        return order, family, subfamily, tribe, genus, species, canonicalName, authorship, scientificName, rank, isInGBIF
+        return order, family, subfamily, tribe, genus, subgenus, species, canonicalName, authorship, scientificName, rank, isInGBIF
     except requests.exceptions.RequestException as e:
         print(f"Error fetching species match: {e}")
-        return 'NA','NA','NA','NA','NA','NA','NA','NA','NA', 'NA','0'
+        return 'NA','NA','NA','NA','NA','NA','NA','NA','NA','NA', 'NA','0'
 
 def get_species_gbif_usage_key(name):
     """
@@ -84,30 +85,30 @@ def fetch_usage_key_in_taxonomy(usagekey):
     else:
         return None
 
-def insert_taxonomy(usageKey, order, family, subfamily, tribe, genus, species, canonicalName, authorship, scientificName, rank, isInGBIF):
+def insert_taxonomy(usageKey, order, family, subfamily, tribe, genus, subgenus, species, canonicalName, authorship, scientificName, rank, isInGBIF):
     query = f"""
-        INSERT INTO taxonomy (usageKey, "order", family, subfamily, tribe, genus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+        INSERT INTO taxonomy (usageKey, "order", family, subfamily, tribe, genus, subgenus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
         """
-    values = (usageKey, order, family, subfamily, tribe, genus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
+    values = (usageKey, order, family, subfamily, tribe, genus, subgenus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
     cursor = connection.cursor()
     cursor.execute(query,values)
     connection.commit()
 
 def insert_taxonomy_tmp(usagekey_tmp):
     query = f"""
-        INSERT INTO taxonomy (usageKey, "order", family, subfamily, tribe, genus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+        INSERT INTO taxonomy (usageKey, "order", family, subfamily, tribe, genus, subgenus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
         """
-    values = (usagekey_tmp, '', '', '', '', '', '', '', '', '', '', '0')
+    values = (usagekey_tmp, '', '','', '', '', '', '', '', '', '', '', '0')
     cursor = connection.cursor()
     cursor.execute(query,values)
     connection.commit()
 
 def scientific_name_from_collection(row):
     genus = row[3]
-    species = row[4]
-    subspecies = row[5]
+    species = row[5]
+    subspecies = row[6]
     if subspecies != "":
         return f"{genus} {species} {subspecies}"
     else:
@@ -126,13 +127,14 @@ with open("molecular_example_data.csv", mode="r", newline='', encoding="utf-8") 
                 subfamily = from_gbif[2]
                 tribe = from_gbif[3]
                 genus = from_gbif[4]
-                species = from_gbif[5]
+                subgenus = from_gbif[5]
+                species = from_gbif[6]
                 canonicalName = scientific_name_from_collection(row)
-                authorship = from_gbif[7]
-                scientificName = from_gbif[8]
-                rank = from_gbif[9]
-                isInGBIF = from_gbif[10]
-                insert_taxonomy(usagekey, order, family, subfamily, tribe, genus, species, canonicalName, authorship, scientificName, rank, isInGBIF)
+                authorship = from_gbif[8]
+                scientificName = from_gbif[9]
+                rank = from_gbif[10]
+                isInGBIF = from_gbif[11]
+                insert_taxonomy(usagekey, order, family, subfamily, tribe, genus, subgenus, species, species, canonicalName, authorship, scientificName, rank, isInGBIF)
             else:
                 print("usagekey already present")
         else:
