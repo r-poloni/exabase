@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS "taxonomy" (
   "subfamily" TEXT, -- taxonomy, subfamily of the species
   "tribe" TEXT, -- taxonomy, tribe of the species
   "genus" TEXT, -- taxonomy, genus
+  "subgenus" TEXT, -- taxonomy, subgenus
   "species" TEXT, --taxonomy, species name (genus + species)
   "canonicalName" TEXT, -- taxonomy, full scientific name without authorship
   "authorship" TEXT, -- taxonomy, authorship associated to the name usage (scientificName)
