@@ -12,37 +12,37 @@ The file for data definition language is [example_exabase_ddl.sql](https://githu
 The database is composed by 4 tables: “Records”, “Molecular”, “Taxonomy” and “Sequences”.  
 <br/>
 **Records:** It is a table where the unit (row) is an occurrence, as in GBIF, so a row where multiple specimens can be stored. Each row of the table corresponds to a unique combination of taxon key (a unique identifier for that name usage as in GBIF usageKey), location, date, collector and institution holding the specimen or record (or source in case of bibliographic data or another database).  
-Here I put all data that come from any natural history collection or any other source: material I examine in museums, species occurrence from bibliographic source, occurrence from another database. For example, these two rows are separate because the collection date is different. Since specimens in collections are not usually identified by a unique code, it is pointless to enter a row for each specimen. Instead, we can enter a row for each series of specimens that are in the same place (collection), collected by the same person, in the same location and on the same date and that are stored in the same museum.
+Here I put all data that come from any natural history collection or any other source: material I examine in museums, species occurrence from bibliographic source, occurrence from another database. For example, these two rows are separate because the collection date is different. Since specimens in collections are not usually identified by a unique code, it is pointless to enter a row for each specimen. Instead, we can enter a row for each series of specimens that are in the same place (collection), collected by the same person, in the same location and on the same date and that are stored in the same museum. Here I don't put any information on taxonomy, because every record is connected to the "Taxonomy" table through the usageKey, like in the example below.
 
-| usageKey | locality | eventDate | recordedBy | institutionID |
-| -------- | -------- | --------- | ---------- | ------------- |
-| 12174952 | Mt. Cimone | 1998-06-10 | P. Pallino | Milan Museum of Natural History |
-| 12174952 | Mt. Cimone |2003-07-19 | P. Pallino | Milan Museum of Natural History |
+| id | usageKey | locality | eventDate | recordedBy | institutionID |
+| -- | -------- | -------- | --------- | ---------- | ------------- |
+| 123 | 8544630 | Mt. Cimone | 2019-06-25 | P. Pallino | coll. Poloni |
+| 124 | 8544630 | Mt. Cimone | 2016-07-19 | P. Pallino | Milan Museum of Natural History |
 
 <br/>
 
 **Molecular:** this table contains my collection of molecular samples, and the specimens from other collections, where each specimen has a unique code and is stored separately. Here, all fields can be repeated except for the specimen identifier (collection_id).  
-For this table, the only thing I indicate is where the specimen is in the collection, how it is preserved, etc. but I don’t include data on locality, collection date and so on. Since the specimens in my collection are also a source of data on the distribution, phenology and biology of the species, they are also included in the ‘Records’ table. In the ‘Records’ table, obviously, a row will be a series of specimens taken on the same day, by the same person, etc., while in the ‘Collection’ table each specimen has a separate row. These two tables are linked by the ‘linking_id’ field, which, for each row in the “Collection” table, points to a row in the ‘Records’ table. In the example below, you can see that the linking_id is the same; in fact, both specimens point to the same row in the ‘Records’ table, which means that they are both specimens taken on the same day by me in the same locality.
-| collection_id | linking_id | preservation |
-| ------------- | ---------- | ------------ |
-| RP24.001 | 123 | alcol 96 | drawer 1.3 |
-| RP245.002 | 123 | dry | drawer 1.3 |
+For this table, the only thing I indicate is where the specimen is in the collection, how it is preserved, etc. but I don’t include data on locality, collection date and so on. Since the specimens in my collection are also a source of data on the distribution, phenology and biology of the species, they are also included in the ‘Records’ table and connected with a "linking_id" as you can see from the below example. In the ‘Records’ table, obviously, a row will be a series of specimens taken on the same day, by the same person, etc., while in the ‘Collection’ table each specimen has a separate row. These two tables are linked by the ‘linking_id’ field, which, for each row in the “Collection” table, points to a row in the ‘Records’ table. In the example below, you can see that the linking_id is the same; in fact, both specimens point to the same row in the ‘Records’ table, which means that they are both specimens taken on the same day by me in the same locality.
+| collection_id | linking_id | preservation | localisation |
+| ------------- | ---------- | ------------ | ------------ |
+| RP19.001 | 123 | alcol 96 | drawer 1.3 |
+| RP24.002 | 545 | dry | drawer 1.3 |
 
 <br/>
 
 **Taxonomy:** A third table includes the information on taxonomy: genus, species, author, family, etc. An example is shown below.
 | usageKey | family | genus | canonicalName | authorship |
 | -------- | ------ | ----- | ------------- | ---------- |
+| 8544630 | Cerambycidae | Rhagium | Rhagium inquisitor | (Linnaeus, 1758) |
 | 4458531 | Oedemeridae | Oedemera | Oedemera flavipes | (Fabricius, 1792) |
-| 12174952 | Cerambycidae | Rhagium | Rhagium inquisitor | (Linnaeus, 1758) |
 
 <br/>
 
 **Sequences:** This last table contains information on sequencing performed on the specimens contained in the “Molecular” table. Every record in this table is linked to the “Molecular” table with the “collection_id”.
 | id | type | collection_id |
 | -- | ---- | ------------- |
-| 1 | COI | RP24.014 |
-| 2 | COI | RP24.015 |
+| 1 | COI | RP19.001 |
+| 2 | COI | RP24.002 |
 
 <br/><br/>
 
