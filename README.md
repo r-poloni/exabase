@@ -1,7 +1,7 @@
 
 # exabase
 
-Exabase is an SQLite-based database structure for storing natural history collections data, suited for unifying under the same database structure both occurrence-based data (e.g. citizen science observations) where multiple specimens are lumped together and specimen-based data (e.g. a collection of samples for barcoding) where each specimen is recorded separately. 
+Exabase is an SQLite-based database structure for storing natural history collections data based on the [Darwin Core Standard](https://dwc.tdwg.org/), suited for unifying under the same database structure both occurrence-based data (e.g. citizen science observations) where multiple specimens are lumped together and specimen-based data (e.g. a collection of samples for barcoding) where each specimen is recorded separately. 
 It is completely open-source and linked to a shiny-based app to visualize the data: [exabase_visualizer](https://github.com/r-poloni/exabase_visualiser).  
 You will find below an example database following the exabase structure to show how it can be used, populated with the data from a paper I published and where we used both specimens from museums and citizen science and specimens for molecular analysis to study the distribution and taxonomy of a beetle genus.  
 In this repository you will find both a [ready database](https://github.com/r-poloni/exabase/blob/main/example_exabase.db) and tables and code to reproduce the final database (in the code area).
